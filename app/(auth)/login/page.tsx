@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useLoginMutation, setCredentials } from '@/lib/features/auth/authSlice';
+import { useLoginMutation, setCredentials, useGoogleLoginMutation } from '@/lib/features/auth/authSlice';
 import { useDispatch } from 'react-redux';
 import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -13,6 +14,17 @@ export default function LoginPage() {
     const router = useRouter();
     const dispatch = useDispatch();
     const [login, { isLoading, error }] = useLoginMutation();
+    const [googleLogin] = useGoogleLoginMutation();
+
+    const handleGoogleSuccess = async (credentialResponse: any) => {
+        try {
+            const user = await googleLogin({ token: credentialResponse.credential }).unwrap();
+            dispatch(setCredentials(user));
+            router.push('/dashboard');
+        } catch (err) {
+            console.error('Google Login Failed', err);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -104,6 +116,25 @@ export default function LoginPage() {
                                 </>
                             )}
                         </button>
+                    </div>
+
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-200" />
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-center">
+                        <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={() => {
+                                console.log('Login Failed');
+                            }}
+                            useOneTap
+                        />
                     </div>
 
                     <div className="text-center text-sm">

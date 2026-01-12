@@ -4,6 +4,8 @@ import { Provider } from 'react-redux'
 import { makeStore, AppStore } from '../lib/store'
 import { initializeAuth } from '../lib/features/auth/authSlice'
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 export default function StoreProvider({
     children,
 }: {
@@ -20,5 +22,11 @@ export default function StoreProvider({
         }
     }, [])
 
-    return <Provider store={storeRef.current}>{children}</Provider>
+    return (
+        <Provider store={storeRef.current}>
+            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+                {children}
+            </GoogleOAuthProvider>
+        </Provider>
+    )
 }

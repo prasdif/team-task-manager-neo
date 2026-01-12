@@ -4,11 +4,19 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { OAuth2Client } = require('google-auth-library');
 
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:3000',
+        'https://team-task-manager-neo-53ue.vercel.app',
+        process.env.CLIENT_URL
+    ].filter(Boolean),
+    credentials: true
+}));
 app.use(express.json());
 
 // --- Database Connection ---
@@ -79,7 +87,7 @@ const sendAssignmentEmail = async (userEmail, taskTitle, assignedBy) => {
             to: userEmail,
             subject: `New Task Assigned: ${taskTitle}`,
             text: `You have been assigned a new task: "${taskTitle}" by ${assignedBy}. Log in to view details.`,
-            html: `<b>You have been assigned a new task:</b><br/><h3>${taskTitle}</h3><br/>by ${assignedBy}.<br/><a href="http://localhost:3000/dashboard/tasks">View Task</a>`
+            html: `<b>You have been assigned a new task:</b><br/><h3>${taskTitle}</h3><br/>by ${assignedBy}.<br/><a href="${process.env.CLIENT_URL || 'https://team-task-manager-neo-53ue.vercel.app'}/dashboard/tasks">View Task</a>`
         });
         console.log(`Email sent to ${userEmail}`);
     } catch (error) {
@@ -288,6 +296,42 @@ app.post('/api/auth/login', async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+app.post('/api/auth/google', async (req, res) => {
+    const { token } = req.body;
+    try {
+        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const { name, email, picture } = ticket.getPayload();
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+            user = await User.create({
+                username: name,
+                email,
+                password: randomPassword,
+                role: 'member'
+            });
+        }
+
+        res.json({
+            _id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            token: generateToken(user.id),
+        });
+
+    } catch (error) {
+        console.error('Google Auth Error:', error);
+        res.status(400).json({ message: 'Google authentication failed' });
     }
 });
 
