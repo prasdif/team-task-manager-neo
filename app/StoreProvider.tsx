@@ -16,15 +16,22 @@ export default function StoreProvider({
         storeRef.current = makeStore()
     }
 
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
     useEffect(() => {
         if (storeRef.current) {
             storeRef.current.dispatch(initializeAuth())
         }
-    }, [])
+        if (!clientId) {
+            console.error("Google Client ID is missing. Check your .env file and restart the server.");
+        } else {
+            console.log("Google Client ID loaded:", clientId);
+        }
+    }, [clientId])
 
     return (
         <Provider store={storeRef.current}>
-            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+            <GoogleOAuthProvider clientId={clientId || ''}>
                 {children}
             </GoogleOAuthProvider>
         </Provider>

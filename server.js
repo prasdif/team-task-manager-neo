@@ -34,7 +34,7 @@ connectDB();
 // --- Models ---
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: false, unique: true, sparse: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['admin', 'member'], default: 'member' },
 }, { timestamps: true });
@@ -255,13 +255,13 @@ app.delete('/api/tasks/:id', protect, async (req, res) => {
 
 app.post('/api/auth/register', async (req, res) => {
     try {
-        const { username, email, password } = req.body;
-        if (!username || !email || !password) return res.status(400).json({ message: 'Please add all fields' });
+        const { username, password } = req.body;
+        if (!username || !password) return res.status(400).json({ message: 'Please add all fields' });
 
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ username });
         if (userExists) return res.status(400).json({ message: 'User already exists' });
 
-        const user = await User.create({ username, email, password });
+        const user = await User.create({ username, password });
         if (user) {
             res.status(201).json({
                 _id: user.id,
@@ -280,8 +280,8 @@ app.post('/api/auth/register', async (req, res) => {
 
 app.post('/api/auth/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
+        const { username, password } = req.body;
+        const user = await User.findOne({ username });
 
         if (user && (await user.matchPassword(password))) {
             res.json({

@@ -7,9 +7,10 @@ import { useRegisterMutation, setCredentials } from '@/lib/features/auth/authSli
 import { useDispatch } from 'react-redux';
 import { User, Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
 
+import toast from 'react-hot-toast';
+
 export default function RegisterPage() {
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
     const dispatch = useDispatch();
@@ -17,12 +18,17 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("Attempting to register with:", { username, password });
         try {
-            const user = await register({ username, email, password }).unwrap();
+            const user = await register({ username, password }).unwrap();
+            console.log("Registration success:", user);
             dispatch(setCredentials(user));
+            toast.success("Registration successful!");
             router.push('/dashboard');
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to register:', err);
+            const errorMessage = err?.data?.message || err?.error || "Registration failed. Check your connection.";
+            toast.error(errorMessage);
         }
     };
 
@@ -61,27 +67,7 @@ export default function RegisterPage() {
                             </div>
                         </div>
 
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                Email address
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
-                                    required
-                                    className="block w-full rounded-xl border-0 py-3 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6 transition-all"
-                                    placeholder="Enter your email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                            </div>
-                        </div>
+
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">

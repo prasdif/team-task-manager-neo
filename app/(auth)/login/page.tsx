@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLoginMutation, setCredentials, useGoogleLoginMutation } from '@/lib/features/auth/authSlice';
 import { useDispatch } from 'react-redux';
-import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { User, Lock, Loader2, ArrowRight } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
     const dispatch = useDispatch();
@@ -17,19 +18,30 @@ export default function LoginPage() {
     const [googleLogin] = useGoogleLoginMutation();
 
     const handleGoogleSuccess = async (credentialResponse: any) => {
+        console.log("Google response received:", credentialResponse);
         try {
+            if (!credentialResponse.credential) {
+                console.error("No credential received from Google");
+                toast.error("Google login failed: No credential received");
+                return;
+            }
+            console.log("Sending token to backend...");
             const user = await googleLogin({ token: credentialResponse.credential }).unwrap();
+            console.log("Backend response success:", user);
             dispatch(setCredentials(user));
+            toast.success("Login successful!");
             router.push('/dashboard');
-        } catch (err) {
-            console.error('Google Login Failed', err);
+        } catch (err: any) {
+            console.error('Google Login Backend Error:', err);
+            const errorMessage = err?.data?.message || err?.message || "Google Login verification failed";
+            toast.error(errorMessage);
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const user = await login({ email, password }).unwrap();
+            const user = await login({ username, password }).unwrap();
             dispatch(setCredentials(user));
             router.push('/dashboard');
         } catch (err) {
@@ -52,23 +64,23 @@ export default function LoginPage() {
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                Email address
+                            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                                Username
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" />
+                                    <User className="h-5 w-5 text-gray-400" />
                                 </div>
                                 <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
+                                    id="username"
+                                    name="username"
+                                    type="text"
+                                    autoComplete="username"
                                     required
                                     className="block w-full rounded-xl border-0 py-3 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6 transition-all"
-                                    placeholder="Enter your email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Enter your username"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -98,7 +110,7 @@ export default function LoginPage() {
 
                     {error && (
                         <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500 text-center">
-                            {(error as any)?.data?.message || 'Invalid email or password'}
+                            {(error as any)?.data?.message || 'Invalid username or password'}
                         </div>
                     )}
 

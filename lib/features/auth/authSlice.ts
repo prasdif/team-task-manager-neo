@@ -4,7 +4,7 @@ import { apiSlice } from '../api/apiSlice';
 interface User {
     _id: string;
     username: string;
-    email: string;
+    email?: string;
     role: string;
     token: string;
 }
