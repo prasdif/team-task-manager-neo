@@ -17,7 +17,7 @@ export interface AuthState {
 const initialState: AuthState = {
     user: null,
     token: null,
-};  
+};
 
 
 export const authApi = apiSlice.injectEndpoints({
@@ -36,17 +36,10 @@ export const authApi = apiSlice.injectEndpoints({
                 body: userData,
             }),
         }),
-        googleLogin: builder.mutation<User, { token: string }>({
-            query: (data) => ({
-                url: '/auth/google',
-                method: 'POST',
-                body: data,
-            }),
-        }),
     }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useGoogleLoginMutation } = authApi;
+export const { useLoginMutation, useRegisterMutation } = authApi;
 
 const authSlice = createSlice({
     name: 'auth',
@@ -80,13 +73,4 @@ const authSlice = createSlice({
 });
 
 export const { setCredentials, logout, initializeAuth } = authSlice.actions;
-export default authSlice.reducer; 
-
-
-
-
-
-
-
-
-
+export default authSlice.reducer;

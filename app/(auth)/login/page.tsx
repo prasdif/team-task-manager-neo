@@ -3,11 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useLoginMutation, setCredentials, useGoogleLoginMutation } from '@/lib/features/auth/authSlice';
+import { useLoginMutation, setCredentials } from '@/lib/features/auth/authSlice';
 import { useDispatch } from 'react-redux';
 import { User, Lock, Loader2, ArrowRight } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -15,37 +13,6 @@ export default function LoginPage() {
     const router = useRouter();
     const dispatch = useDispatch();
     const [login, { isLoading, error }] = useLoginMutation();
-    const [googleLogin] = useGoogleLoginMutation();
-
-    const handleGoogleSuccess = async (credentialResponse: any) => {
-        console.log("Google response received:", credentialResponse);
-        try {
-            if (!credentialResponse.credential) {
-                console.error("No credential received from Google");
-                toast.error("Google login failed: No credential received");
-                return;
-            }
-            console.log("Sending token to backend...");
-            const user = await googleLogin({ token: credentialResponse.credential }).unwrap();
-            console.log("Backend response success:", user);
-            dispatch(setCredentials(user));
-            toast.success("Login successful!");
-            router.push('/dashboard');
-        } catch (err: any) {
-            console.error('Google Login Backend Error:', err);
-            let errorMessage = "Google Login verification failed";
-            if (err?.data?.message) {
-                errorMessage = err.data.message;
-            } else if (err?.message) {
-                errorMessage = err.message;
-            } else if (err?.data) {
-                errorMessage = JSON.stringify(err.data);
-            } else {
-                errorMessage = JSON.stringify(err);
-            }
-            toast.error(errorMessage);
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -137,25 +104,6 @@ export default function LoginPage() {
                                 </>
                             )}
                         </button>
-                    </div>
-
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-200" />
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="bg-white px-2 text-gray-500">Or continue with</span>
-                        </div>
-                    </div>
-
-                    <div className="flex justify-center">
-                        <GoogleLogin
-                            onSuccess={handleGoogleSuccess}
-                            onError={() => {
-                                console.log('Login Failed');
-                            }}
-                            useOneTap
-                        />
                     </div>
 
                     <div className="text-center text-sm">

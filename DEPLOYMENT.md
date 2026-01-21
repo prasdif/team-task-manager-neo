@@ -2,19 +2,20 @@
 
 ## 🚀 Deployment Steps
 
-### 1. Fix Environment Variables on Vercel
+### 1. Configure Environment Variables on Vercel
 
 Go to your Vercel project settings → Environment Variables and add the following:
 
 #### Required Variables:
 ```
-MONGO_URI=your-mongodb-atlas-connection-string
 JWT_SECRET=your-super-secret-jwt-key
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
 CLIENT_URL=https://your-app-name.vercel.app
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id
 NEXT_PUBLIC_API_URL=/api
+```
+
+#### Optional Variables (for MongoDB - if using real database):
+```
+MONGO_URI=your-mongodb-atlas-connection-string
 ```
 
 #### Optional Variables (for email notifications):
@@ -23,26 +24,16 @@ EMAIL_USER=your-mailtrap-or-smtp-user
 EMAIL_PASS=your-mailtrap-or-smtp-password
 ```
 
-### 2. Set Up MongoDB Atlas (Production Database)
+### 2. Set Up MongoDB Atlas (Optional - for Production Database)
 
-Since your local MongoDB won't work in production:
+The app works with a mock database by default. If you want persistent data:
 
 1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 2. Create a free cluster
 3. Get your connection string (it looks like: `mongodb+srv://username:password@cluster.mongodb.net/team-task-manager`)
 4. Add this as `MONGO_URI` in Vercel environment variables
 
-### 3. Update Google OAuth Settings
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Navigate to your OAuth 2.0 Client
-3. Add your Vercel URL to Authorized JavaScript origins:
-   - `https://your-app-name.vercel.app`
-4. Add to Authorized redirect URIs:
-   - `https://your-app-name.vercel.app`
-   - `https://your-app-name.vercel.app/api/auth/google`
-
-### 4. Deploy
+### 3. Deploy
 
 After adding all environment variables:
 1. Push your code to GitHub (already done ✅)
@@ -51,14 +42,11 @@ After adding all environment variables:
 
 ## ⚠️ Common Issues
 
-### Issue: "MONGO_URI is not defined"
-**Solution**: Make sure you've added `MONGO_URI` to Vercel environment variables
-
-### Issue: "Google OAuth not working"
-**Solution**: Check that your Vercel URL is added to Google Cloud Console authorized origins
-
 ### Issue: "Build fails with TypeScript errors"
 **Solution**: Run `npm run build` locally to test before deploying
+
+### Issue: "API routes returning 500 errors"
+**Solution**: Check that `JWT_SECRET` is set in Vercel environment variables
 
 ## 🔍 Check Build Logs
 
@@ -72,6 +60,6 @@ If deployment fails:
 
 After successful deployment:
 1. Check that the app loads at your Vercel URL
-2. Test Google OAuth login
+2. Test user registration and login
 3. Verify task creation and management works
 4. Check browser console for any API errors
