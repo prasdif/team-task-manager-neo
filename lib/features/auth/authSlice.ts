@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { apiSlice } from '../api/apiSlice';
 
-interface User {
+export interface User {
     _id: string;
     username: string;
     email?: string;
@@ -9,7 +9,7 @@ interface User {
     token: string;
 }
 
-interface AuthState {
+export interface AuthState {
     user: User | null;
     token: string | null;
 }
@@ -17,7 +17,8 @@ interface AuthState {
 const initialState: AuthState = {
     user: null,
     token: null,
-};
+};  
+
 
 export const authApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -79,4 +80,13 @@ const authSlice = createSlice({
 });
 
 export const { setCredentials, logout, initializeAuth } = authSlice.actions;
-export default authSlice.reducer;
+export default authSlice.reducer; 
+
+
+
+
+
+
+
+
+

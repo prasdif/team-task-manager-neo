@@ -60,7 +60,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         <X size={24} />
                     </button>
                 </div>
-
                 {/* Navigation Links */}
                 <nav className="flex-1 space-y-1 px-3 py-6">
                     {navigation.map((item) => {

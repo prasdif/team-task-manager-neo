@@ -33,7 +33,16 @@ export default function LoginPage() {
             router.push('/dashboard');
         } catch (err: any) {
             console.error('Google Login Backend Error:', err);
-            const errorMessage = err?.data?.message || err?.message || "Google Login verification failed";
+            let errorMessage = "Google Login verification failed";
+            if (err?.data?.message) {
+                errorMessage = err.data.message;
+            } else if (err?.message) {
+                errorMessage = err.message;
+            } else if (err?.data) {
+                errorMessage = JSON.stringify(err.data);
+            } else {
+                errorMessage = JSON.stringify(err);
+            }
             toast.error(errorMessage);
         }
     };

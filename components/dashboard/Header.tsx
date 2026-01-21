@@ -17,7 +17,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
     const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
 
     useEffect(() => {
-        const handler = setTimeout(() => {
+        const handler = window.setTimeout(() => {
             const params = new URLSearchParams(searchParams.toString());
             if (searchTerm) {
                 params.set('search', searchTerm);
@@ -53,7 +53,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     />
                 </div>
             </div>
-
             {/* Right Actions */}
             <div className="flex items-center gap-6">
                 {/* Notifications */}
@@ -75,4 +74,4 @@ export default function Header({ onMenuClick }: HeaderProps) {
             </div>
         </header>
     );
-}
+}  

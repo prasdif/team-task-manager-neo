@@ -15,10 +15,10 @@ export default function Home() {
               <span>Tasker</span>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/login" className="text-sm font-semibold text-gray-600 hover:text-black transition-colors">
-                Login
+              <Link href="/dashboard" className="text-sm font-semibold text-gray-600 hover:text-black transition-colors">
+                Dashboard
               </Link>
-              <Link href="/register" className="text-sm font-semibold bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors">
+              <Link href="/dashboard" className="text-sm font-semibold bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors">
                 Get Started
               </Link>
             </div>
@@ -42,12 +42,12 @@ export default function Home() {
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link
-              href="/register"
+              href="/dashboard"
               className="group flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-gray-800 transition-all hover:gap-3"
             >
               Start for free <ArrowRight size={16} />
             </Link>
-            <Link href="/login" className="text-sm font-semibold leading-6 text-gray-900 flex items-center gap-1 hover:gap-2 transition-all">
+            <Link href="/dashboard" className="text-sm font-semibold leading-6 text-gray-900 flex items-center gap-1 hover:gap-2 transition-all">
               Live demo <span aria-hidden="true">→</span>
             </Link>
           </div>

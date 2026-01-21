@@ -121,37 +121,35 @@ export default function TaskCard({ task, onDelete, onMove, isAdmin, currentUserI
                 </div>
             </div>
 
-            {/* Move Actions */}
-            {canModifyTask && (
-                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {getPreviousStatus() && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                const prevStatus = getPreviousStatus();
-                                if (prevStatus) onMove(task._id, prevStatus);
-                            }}
-                            className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors border border-gray-200"
-                        >
-                            <ArrowLeft size={12} />
-                            Back
-                        </button>
-                    )}
-                    {getNextStatus() && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                const nextStatus = getNextStatus();
-                                if (nextStatus) onMove(task._id, nextStatus);
-                            }}
-                            className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-semibold text-white bg-black hover:bg-gray-900 rounded-lg transition-colors shadow-sm"
-                        >
-                            Next
-                            <ArrowRight size={12} />
-                        </button>
-                    )}
-                </div>
-            )}
+            {/* Move Actions - Always Visible */}
+            <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+                {getPreviousStatus() && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            const prevStatus = getPreviousStatus();
+                            if (prevStatus) onMove(task._id, prevStatus);
+                        }}
+                        className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors border border-gray-200"
+                    >
+                        <ArrowLeft size={12} />
+                        Back
+                    </button>
+                )}
+                {getNextStatus() && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            const nextStatus = getNextStatus();
+                            if (nextStatus) onMove(task._id, nextStatus);
+                        }}
+                        className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-semibold text-white bg-black hover:bg-gray-900 rounded-lg transition-colors shadow-sm"
+                    >
+                        Next
+                        <ArrowRight size={12} />
+                    </button>
+                )}
+            </div>
 
             {/* Created by info (for admins viewing all tasks) */}
             {isAdmin && task.createdBy._id !== currentUserId && (
