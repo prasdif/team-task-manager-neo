@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from 'mongoose'; 
+import mongoose, { Schema, Document, Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 // Define the User interface
@@ -8,7 +8,7 @@ export interface IUser extends Document {
     password?: string;
     role: 'admin' | 'member';
     matchPassword: (enteredPassword: string) => Promise<boolean>;
-} 
+}
 
 const userSchema = new Schema<IUser>(
     {
@@ -21,9 +21,9 @@ const userSchema = new Schema<IUser>(
 );
 
 // Pre-save hook to hash password
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
     if (!this.isModified('password')) {
-        next();
+        return;
     }
 
     if (this.password) {

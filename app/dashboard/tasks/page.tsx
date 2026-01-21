@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Plus, Sparkles, Filter, Users as UsersIcon, User, CheckCircle2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
@@ -17,7 +17,7 @@ import {
     Task,
 } from '@/lib/features/tasks/taskApi';
 
-export default function TasksPage() {
+function TasksContent() {
     const { user } = useSelector((state: RootState) => state.auth);
     const searchParams = useSearchParams();
     const searchTerm = searchParams.get('search') || '';
@@ -239,5 +239,24 @@ export default function TasksPage() {
                 currentUser={user}
             />
         </div>
+    );
+}
+
+function TasksLoading() {
+    return (
+        <div className="h-full flex items-center justify-center">
+            <div className="text-center">
+                <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-black border-r-transparent"></div>
+                <p className="mt-4 text-sm text-gray-500">Loading...</p>
+            </div>
+        </div>
+    );
+}
+
+export default function TasksPage() {
+    return (
+        <Suspense fallback={<TasksLoading />}>
+            <TasksContent />
+        </Suspense>
     );
 }

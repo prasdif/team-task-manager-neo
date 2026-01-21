@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import {
     Clock,
     CheckCircle2,
@@ -14,7 +15,7 @@ import {
 import { useGetTasksQuery } from '@/lib/features/tasks/taskApi';
 import Link from 'next/link';
 
-export default function DashboardPage() {
+function DashboardContent() {
     const { data: tasks = [], isLoading } = useGetTasksQuery({ filter: 'all' });
 
     // Calculate Stats
@@ -90,9 +91,6 @@ export default function DashboardPage() {
                             <div className={`${stat.bg} rounded-lg p-3`}>
                                 <stat.icon className={`h-6 w-6 ${stat.color}`} />
                             </div>
-                            {/* <span className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium bg-gray-100 text-black border border-gray-200`}>
-                                {stat.change}
-                            </span> */}
                         </div>
                         <div className="mt-4">
                             <h3 className="text-sm font-medium text-gray-500">{stat.label}</h3>
@@ -184,5 +182,24 @@ export default function DashboardPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+function DashboardLoading() {
+    return (
+        <div className="flex items-center justify-center h-full min-h-[400px]">
+            <div className="text-center">
+                <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-black border-r-transparent"></div>
+                <p className="mt-4 text-sm text-gray-500">Loading dashboard...</p>
+            </div>
+        </div>
+    );
+}
+
+export default function DashboardPage() {
+    return (
+        <Suspense fallback={<DashboardLoading />}>
+            <DashboardContent />
+        </Suspense>
     );
 }

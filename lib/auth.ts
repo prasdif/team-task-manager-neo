@@ -12,7 +12,7 @@ export async function protect() {
         try {
             const token = authorization.split(' ')[1];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+            const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key');
 
             // In stateless mode, the token IS the user record.
             return decoded;
