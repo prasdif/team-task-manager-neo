@@ -10,7 +10,7 @@ import {
     Calendar,
     ArrowRight,
     Users,
-    Filter
+    BarChart2
 } from 'lucide-react';
 import { useGetTasksQuery } from '@/lib/features/tasks/taskApi';
 import Link from 'next/link';
@@ -24,124 +24,155 @@ function DashboardContent() {
     const inProgressTasks = tasks.filter(t => t.status === 'in-progress').length;
     const pendingTasks = tasks.filter(t => t.status === 'pending').length;
 
-    const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-
     const stats = [
         {
             label: 'Total Tasks',
             value: totalTasks.toString(),
-            change: '', // Dynamic change requires history, skipping for now
             icon: ListTodo,
-            color: 'text-black',
-            bg: 'bg-gray-100'
+            iconColor: 'text-gray-700 dark:text-gray-300',
+            iconBg: 'bg-gray-100 dark:bg-gray-700'
         },
         {
             label: 'In Progress',
             value: inProgressTasks.toString(),
-            change: '',
             icon: Clock,
-            color: 'text-black',
-            bg: 'bg-gray-200'
+            iconColor: 'text-orange-600 dark:text-orange-400',
+            iconBg: 'bg-orange-50 dark:bg-orange-900/20'
         },
         {
             label: 'Completed',
             value: completedTasks.toString(),
-            change: '',
             icon: CheckCircle2,
-            color: 'text-black',
-            bg: 'bg-gray-100'
+            iconColor: 'text-green-600 dark:text-green-400',
+            iconBg: 'bg-green-50 dark:bg-green-900/20'
         },
         {
-            label: 'Pending',
+            label: 'Pending Review',
             value: pendingTasks.toString(),
-            change: '',
-            icon: Filter,
-            color: 'text-black',
-            bg: 'bg-gray-200'
+            icon: BarChart2,
+            iconColor: 'text-blue-600 dark:text-blue-400',
+            iconBg: 'bg-blue-50 dark:bg-blue-900/20'
         },
     ];
 
-    const recentTasks = [...tasks].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 3);
-    const pendingTasksList = tasks.filter(t => t.status === 'pending').slice(0, 4);
+    const recentTasks = [...tasks].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 4);
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-full min-h-[400px]">
+            <div className="flex items-center justify-center h-full min-h-[500px]">
                 <div className="text-center">
-                    <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-black border-r-transparent"></div>
-                    <p className="mt-4 text-sm text-gray-500">Loading dashboard...</p>
+                    <div className="inline-block h-10 w-10 animate-spin rounded-full border-3 border-solid border-gray-300 border-t-gray-900 dark:border-gray-600 dark:border-t-white"></div>
+                    <p className="mt-4 text-sm font-medium text-gray-600 dark:text-gray-400">Loading dashboard...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 max-w-[1400px]">
             {/* Header Section */}
-            <div>
-                <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Dashboard Overview</h1>
-                <p className="mt-2 text-base text-gray-500">Welcome back! Here's what's happening with your tasks today.</p>
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard</h1>
+                    <p className="mt-1.5 text-sm text-gray-600 dark:text-gray-400">Welcome back to your project management dashboard.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/dashboard/calendar"
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all shadow-sm"
+                    >
+                        <Calendar size={16} />
+                        View Calendar
+                    </Link>
+                    <Link
+                        href="/dashboard/tasks"
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-sm"
+                    >
+                        <span className="text-base font-bold">+</span>
+                        New Task
+                    </Link>
+                </div>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat) => (
-                    <div key={stat.label} className="relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md hover:-translate-y-1">
-                        <div className="flex items-center justify-between">
-                            <div className={`${stat.bg} rounded-lg p-3`}>
-                                <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                    <div
+                        key={stat.label}
+                        className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className={`${stat.iconBg} rounded-lg p-2.5 flex items-center justify-center`}>
+                                <stat.icon className={`h-5 w-5 ${stat.iconColor}`} strokeWidth={2} />
                             </div>
                         </div>
                         <div className="mt-4">
-                            <h3 className="text-sm font-medium text-gray-500">{stat.label}</h3>
-                            <p className="mt-2 text-3xl font-bold text-gray-900">{stat.value}</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</p>
+                            <p className="mt-1.5 text-3xl font-bold text-gray-900 dark:text-white tracking-tight">{stat.value}</p>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 {/* Recent Tasks */}
-                <div className="lg:col-span-2">
-                    <div className="mb-4 flex items-center justify-between">
-                        <h2 className="text-lg font-bold text-gray-900">Recent Tasks</h2>
-                        <Link href="/dashboard/tasks" className="text-sm font-medium text-black hover:text-gray-700 flex items-center gap-1">
-                            View All <ArrowRight size={16} />
+                <div className="lg:col-span-2 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Recent Tasks</h2>
+                            <p className="mt-0.5 text-sm text-gray-600 dark:text-gray-400">Your most recent tasks and their status</p>
+                        </div>
+                        <Link
+                            href="/dashboard/tasks"
+                            className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-1.5 group"
+                        >
+                            View All
+                            <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
                         </Link>
                     </div>
-                    <div className="space-y-4">
+
+                    <div className="space-y-3">
                         {recentTasks.length === 0 && (
-                            <div className="p-8 text-center bg-white rounded-xl border border-gray-200">
-                                <p className="text-gray-500">No tasks found. Create one to get started!</p>
+                            <div className="bg-white dark:bg-gray-800 rounded-xl p-12 text-center border border-gray-200 dark:border-gray-700">
+                                <ListTodo className="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600" strokeWidth={1.5} />
+                                <p className="mt-4 text-sm font-medium text-gray-600 dark:text-gray-400">No tasks found</p>
+                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">Create one to get started!</p>
                             </div>
                         )}
                         {recentTasks.map((task) => (
-                            <div key={task._id} className="group flex flex-col gap-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${task.priority === 'High' ? 'bg-red-100 text-red-600' : task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'
-                                        } font-bold text-lg`}>
-                                        {task.title.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold text-gray-900 group-hover:text-black transition-colors">{task.title}</h3>
-                                        <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                                            <span className="flex items-center gap-1">
-                                                <Calendar size={12} /> {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No Due Date'}
-                                            </span>
-                                            <span>•</span>
-                                            <span className="flex items-center gap-1">
-                                                <Users size={12} /> {task.assigneeName || 'Unassigned'}
-                                            </span>
+                            <div
+                                key={task._id}
+                                className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all group cursor-pointer"
+                            >
+                                <div className="flex items-start justify-between gap-4">
+                                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                                        <div className={`flex-shrink-0 px-2.5 py-1 rounded-md text-xs font-semibold uppercase ${task.priority === 'high'
+                                            ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
+                                            : task.priority === 'medium'
+                                                ? 'bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400'
+                                                : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                                            }`}>
+                                            {task.priority || 'low'}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-semibold text-gray-900 dark:text-white text-base group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors truncate">
+                                                {task.title}
+                                            </h3>
+                                            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                                Due {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No date set'}
+                                            </p>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="flex items-center gap-6 sm:w-1/3 justify-end">
-                                    <div className={`px-3 py-1 rounded-full text-xs font-semibold ${task.status === 'completed' ? 'bg-black text-white' :
-                                        task.status === 'in-progress' ? 'bg-gray-200 text-black' :
-                                            'bg-gray-100 text-gray-600'
-                                        }`}>
-                                        {task.status.replace('-', ' ')}
+                                    <div className="flex-shrink-0">
+                                        <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold ${task.status === 'completed'
+                                            ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                                            : task.status === 'in-progress'
+                                                ? 'bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400'
+                                                : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                                            }`}>
+                                            {task.status === 'in-progress' ? 'In Progress' : task.status === 'completed' ? 'Completed' : 'Backlog'}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -149,35 +180,63 @@ function DashboardContent() {
                     </div>
                 </div>
 
-                {/* Pending Tasks Quick List */}
-                <div className="lg:col-span-1">
-                    <div className="mb-4 flex items-center justify-between">
-                        <h2 className="text-lg font-bold text-gray-900">Pending</h2>
-                        <Link href="/dashboard/tasks" className="rounded-lg bg-black px-3 py-1 text-xs font-semibold text-white hover:bg-gray-900">
-                            View All
-                        </Link>
+                {/* Right Column - Team & Activity */}
+                <div className="lg:col-span-1 space-y-6">
+
+                    {/* Team Members */}
+                    {/* Team Members */}
+                    <div>
+                        <div className="mb-4">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Team Members</h2>
+                            <p className="mt-0.5 text-sm text-gray-600 dark:text-gray-400">People working on this project</p>
+                        </div>
+                        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold text-sm shadow-sm flex-shrink-0">
+                                        JD
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">John Doe</p>
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate">john@example.com</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold text-sm shadow-sm flex-shrink-0">
+                                        JS
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">Jane Smith</p>
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate">jane@example.com</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-semibold text-sm shadow-sm flex-shrink-0">
+                                        BJ
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">Bob Johnson</p>
+                                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate">bob@example.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="rounded-2xl bg-white p-2 shadow-sm ring-1 ring-gray-200">
-                        {pendingTasksList.length === 0 && (
-                            <div className="p-4 text-center">
-                                <p className="text-sm text-gray-500">No pending tasks!</p>
-                            </div>
-                        )}
-                        {pendingTasksList.map((task) => (
-                            <div key={task._id} className="flex items-start gap-3 rounded-xl p-3 hover:bg-gray-50 transition-colors cursor-pointer group">
-                                <div className="mt-1">
-                                    <div className="h-5 w-5 rounded border-2 border-gray-300 group-hover:border-black transition-colors"></div>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-gray-900 group-hover:text-black line-clamp-1">{task.title}</p>
-                                    <p className="text-xs text-gray-500">{task.assigneeName || 'Unassigned'}</p>
+
+                    {/* Recent Activity */}
+                    <div>
+                        <div className="mb-4">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h2>
+                            <p className="mt-0.5 text-sm text-gray-600 dark:text-gray-400">Latest updates from the project</p>
+                        </div>
+                        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="h-2 w-2 rounded-full bg-gray-900 dark:bg-white mt-2 flex-shrink-0"></div>
+                                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">Task moved to In Progress</p>
                                 </div>
                             </div>
-                        ))}
-                        <div className="my-2 border-t border-gray-100"></div>
-                        <Link href="/dashboard/tasks" className="block w-full py-2 text-center text-sm font-medium text-gray-500 hover:text-gray-900">
-                            View all tasks
-                        </Link>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -187,10 +246,10 @@ function DashboardContent() {
 
 function DashboardLoading() {
     return (
-        <div className="flex items-center justify-center h-full min-h-[400px]">
+        <div className="flex items-center justify-center h-full min-h-[500px]">
             <div className="text-center">
-                <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-black border-r-transparent"></div>
-                <p className="mt-4 text-sm text-gray-500">Loading dashboard...</p>
+                <div className="inline-block h-10 w-10 animate-spin rounded-full border-3 border-solid border-gray-300 border-t-gray-900 dark:border-gray-600 dark:border-t-white"></div>
+                <p className="mt-4 text-sm font-medium text-gray-600 dark:text-gray-400">Loading dashboard...</p>
             </div>
         </div>
     );
