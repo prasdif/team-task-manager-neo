@@ -146,9 +146,9 @@ function DashboardContent() {
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                                        <div className={`flex-shrink-0 px-2.5 py-1 rounded-md text-xs font-semibold uppercase ${task.priority === 'high'
+                                        <div className={`flex-shrink-0 px-2.5 py-1 rounded-md text-xs font-semibold uppercase ${task.priority === 'High'
                                             ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
-                                            : task.priority === 'medium'
+                                            : task.priority === 'Medium'
                                                 ? 'bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400'
                                                 : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
                                             }`}>
